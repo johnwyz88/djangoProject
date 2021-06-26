@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import render
 
 from .models import Product
@@ -38,7 +39,10 @@ def product_create_view(request):
 
 
 def product_detail_view(request, id):
-    obj = Product.objects.get(id=id)
+    try:
+        obj = Product.objects.get(id=id)
+    except Product.DoesNotExist:
+        raise Http404
     return render(request, "product/detail.html", {'object': obj})
 
 
