@@ -1,5 +1,5 @@
 from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 
 from .models import Product
 
@@ -19,14 +19,14 @@ from .forms import ProductForm
 #     context = {
 #         "form": my_form
 #     }
-#     return render(request, "product/product_create.html", context)
+#     return render(request, "product/create.html", context)
 
 # def product_create_view(request):
 #     if request.method == "POST":
 #         my_new_title = request.POST.get('title')
 #         print(my_new_title)
 #     context = {}
-#     return render(request, "product/product_create.html", context)
+#     return render(request, "product/create.html", context)
 
 def product_create_view(request):
     form = ProductForm(request.POST or None)
@@ -35,7 +35,7 @@ def product_create_view(request):
     context = {
         'form': form
     }
-    return render(request, "product/product_create.html", context)
+    return render(request, "product/create.html", context)
 
 
 def product_detail_view(request, id):
@@ -44,6 +44,22 @@ def product_detail_view(request, id):
     except Product.DoesNotExist:
         raise Http404
     return render(request, "product/detail.html", {'object': obj})
+
+
+def product_delete_view(request, id):
+    obj = get_object_or_404(Product, id=id)
+    if request.method == "POST":
+        obj.delete()
+        return redirect("../")
+    return render(request, "product/delete.html", {'object': obj})
+
+
+def product_list_view(request):
+    queryset = Product.objects.all() # list of objects
+    context = {
+        "object_list": queryset
+    }
+    return render(request, "product/list.html", context)
 
 
 """
